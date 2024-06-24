@@ -5,12 +5,12 @@ const followerSchema = new Schema(
         followerId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            // required: true
         },
         followingId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            // required: true
         }
     },
     {
