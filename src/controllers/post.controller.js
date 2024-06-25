@@ -116,7 +116,60 @@ const publishAPost = asyncHandler(async (req, res) => {
         )
 })
 
+const getPostbyId = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+    if (!isValidObjectId(postId)) throw new ApiError(400, "Post Id is not a valid id");
+    const post = await Post.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(postId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            avatar: "$avatar.url",
+                            fullName: 1,
+                            _id: 1
+                        }
+
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner"
+                }
+            }
+        },
+        {
+            $addFields: {
+                photo: "$photo.url",
+            },
+        },
+    ])
+    if (!post) throw new ApiError(500, "Post detail not found");
+    return res.status(200)
+        .json(
+            new ApiResponse(
+                200,
+                post[0],
+                "Post fetched successfully"
+            )
+        )
+})
+
 export {
     getAllPosts,
-    publishAPost
+    publishAPost,
+    getPostbyId
 }

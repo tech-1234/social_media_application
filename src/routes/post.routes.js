@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
-import { getAllPosts, publishAPost } from '../controllers/post.controller.js';
+import { getAllPosts, getPostbyId, publishAPost } from '../controllers/post.controller.js';
 
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
@@ -20,5 +20,9 @@ router
         ]),
         publishAPost
     );
+
+router
+    .route("/:postId")
+    .get(getPostbyId)
 
 export default router
